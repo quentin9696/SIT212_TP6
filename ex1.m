@@ -35,6 +35,7 @@ plot(t, u_t, 'g');
 xlabel('Temps (t)');
 ylabel('Signal');
 title('Signal u(t)');
+legend('u(t)');
 
 
 %%%%%%%%%%%%% FFT %%%%%%%%%%%%
@@ -54,9 +55,16 @@ subplot(2,1,1);
 fft_shift = fftshift(fft_u);
 
 plot(f,abs(fft_shift));
+xlabel('Frequence_{[f]}');
+ylabel('Module');
+legend('Module de u');
+title('Module de la TF du signal u entre -F/2 et F/2');
 subplot(2,1,2);
 plot(f, angle(fft_shift));
-
+xlabel('Frequence_{[f]}');
+ylabel('Phase_{[Radian]}');
+legend('Phase de u');
+title('Phase de la TF du signal u entre -F/2 et F/2');
 
 figure(3);
 fft_shift = fftshift(fft_u);
@@ -67,13 +75,21 @@ delta = (fp/F)*length(fft_shift);
 
 subplot(2,1,1);
 plot(f(milieu-delta:milieu+delta),abs(fft_shift(milieu-delta:milieu+delta)));
+xlabel('Frequence_{[f]}');
+ylabel('Module');
+legend('Module de u');
+title('Module de la TF du signal u entre -f_p et f_p');
 subplot(2,1,2);
 plot(f(milieu-delta:milieu+delta),angle(fft_shift(milieu-delta:milieu+delta)));
+xlabel('Frequence_{[f]}');
+ylabel('Phase_{[Radian]}');
+legend('Phase de u');
+title('Phase de la TF du signal u entre -f_p et f_p');
 
 %%%%%%%% FILTRE %%%%%%%%%%
 
 w=1;
-beta = 0.8;
+beta = 0.5;
 valneg = (1-beta)/(2*w);
 valpos = (1+beta)/(2*w);
 
@@ -82,21 +98,30 @@ h_f = sqrt(w).*(abs(f_filtre)<=(valneg)) + sqrt((w/2)*(1+sin(pi*w/beta*((1/(2*w)
 
 figure(4);
 plot(f_filtre, abs(h_f));
-
+xlabel('Frequence_{[f]}');
+ylabel('Amplitude');
+legend('H(f)');
+title('Reponse frequentielle du filtre entre -F/2 et F/2');
 
 figure(5);
 f_filtre = -fp:1/delta_t:fp;
 h_f_zoom = sqrt(w).*(abs(f_filtre)<=(valneg)) + sqrt((w/2)*(1+sin(pi*w/beta*((1/(2*w))-abs(f_filtre))))).*(abs(f_filtre) >= valneg & abs(f_filtre) <= valpos);
 
 plot(f_filtre, abs(h_f_zoom));
-
+xlabel('Frequence_{[f]}');
+ylabel('Amplitude');
+legend('H(f)');
+title('Reponse frequentielle du filtre entre -f_p et f_p');
 %%%%%%%%%%%% RCS %%%%%%%
 
 figure(6);
 
 h_t = fftshift(real(ifft(h_f)));
 plot(t,abs(h_t));
-
+xlabel('Temps_{[t]}');
+ylabel('Amplitude');
+legend('h(t)');
+title('Reponse impultionnelle du filtre h(t)');
 %%%%%%%%%% filtrage %%%%%%
 
 figure(7);
@@ -105,5 +130,10 @@ x_f = h_f .* fft_shift;
 x_t = ifft(2*x_f);
 
 plot(t, abs(x_t));
+
 hold on;
 plot(t, u_t, 'r');
+xlabel('Temps_{[t]}');
+ylabel('Amplitude');
+legend('x(t) (\beta = 0.5)', 'u(t)');
+title('Signal en entre et sortie du filtre');
